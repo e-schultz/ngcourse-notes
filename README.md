@@ -132,3 +132,92 @@ angular.module('erg')
 
 });
 ```
+
+
+updated state definition
+```javascript
+  .state('tasks.detail', {
+            url: '/{_id:[0-9a-fA-F]{24}}',
+            views: {
+                'taskDetail@tasks': {
+                    controller: 'TaskDetailsCtrl as taskDetails',
+                    templateUrl: '/app/sections/task-list/task-details.html'
+                }
+            }
+
+        }).state('tasks.add', {
+            url: '/add',
+            views: {
+
+                'taskDetail@tasks': {
+                    controller: 'TaskAddCtrl as newTask',
+                    templateUrl: '/app/sections/task-list/task-add.html'
+                }
+
+            }
+        })
+```
+
+updated index.html
+
+```html
+ <div ng-app="erg">
+
+        <div ng-controller="MainCtrl as main">
+
+            <div ng-hide="main.isAuthenticated" ng-controller="LoginFormCtrl as loginForm">
+                Enter username:
+                <input ng-model="loginForm.username" />
+                <br/>Password:
+                <input type="password" ng-model="loginForm.password" />
+                <br/>
+                <div ng-show="main.errorMessage">{{ main.errorMessage}}</div>
+                username: {{loginForm.username}}
+                <button ng-click="main.login(loginForm.username, loginForm.password)">Login</button>
+            </div>
+
+            <div ng-show="main.isAuthenticated">
+                Hello, {{main.username}}!
+            </div>
+
+            <div ui-view></div>
+        </div>
+
+        <div ui-view="parent"></div>
+
+    </div>
+```
+
+
+updated task list
+
+```html
+<h1>My Tasks2</h1>
+
+
+<div ng-show="main.isAuthenticated" ng-controller="TaskListCtrl as taskList">
+    {{main.username}}, you've got {{taskList.numberOfTasks}} tasks
+    <br/>
+    <button ui-sref='tasks.add'>Add task</button>
+    <div ui-view="taskDetail"></div>
+    <hr>Filter:
+    <input ng-model="searchString">
+    </br>
+    <!-- tasks: {{taskList.tasks | json }} -->
+    <table>
+        <tr>
+            <th>Owner</th>
+            <th>Task description</th>
+            <th></th>
+        </tr>
+        <tr ng-repeat="task in taskList.tasks | filter:searchString ">
+            <td>{{task.owner}}</td>
+            <td>{{task.description}}</td>
+            <td><a ui-sref="tasks.detail({_id: task._id})">edit</a>
+            </td>
+        </tr>
+    </table>
+
+</div>
+
+```
